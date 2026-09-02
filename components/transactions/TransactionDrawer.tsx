@@ -69,8 +69,18 @@ export default function TransactionDrawer({
   const drawerRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const { freighter } = useWallet();
-  const [isCategoryLoading, setIsCategoryLoading] = useState(false);
   const { toast } = useToast();
+
+  const currentTransactionId = transaction?.id ?? null;
+  const [prevTransactionId, setPrevTransactionId] = useState<string | null>(currentTransactionId);
+  const [isCategoryLoading, setIsCategoryLoading] = useState(false);
+
+  // Reset the loading state whenever a new transaction is opened so the picker
+  // stays disabled while its category is being fetched.
+  if (currentTransactionId !== prevTransactionId) {
+    setPrevTransactionId(currentTransactionId);
+    setIsCategoryLoading(true);
+  }
 
   // Fetch the currently assigned category whenever the drawer opens for a transaction.
   useEffect(() => {
@@ -79,7 +89,6 @@ export default function TransactionDrawer({
     if (!publicKey) return;
 
     let cancelled = false;
-    setIsCategoryLoading(true);
     getCategory(publicKey, transaction.id)
       .then((fetched) => {
         if (!cancelled) onCategoryLoaded?.(transaction.id, fetched);

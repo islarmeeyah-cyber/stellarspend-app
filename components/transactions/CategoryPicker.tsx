@@ -10,8 +10,6 @@ interface CategoryPickerProps {
   disabled?: boolean;
 }
 
-const CUSTOM_OPTION = "__custom__";
-
 export default function CategoryPicker({
   value,
   onChange,
